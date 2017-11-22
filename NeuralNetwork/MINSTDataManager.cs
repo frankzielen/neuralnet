@@ -11,15 +11,24 @@ namespace NeuralNetwork
     public class MNISTDataManager
     {
         // Data given as string collection
-        ObservableCollection<string> dataset; 
+        ObservableCollection<string> dataset;
+
+        // Number of data sets used (for training / testing)
+        int useddatasets;
+
+        // Epoches used for training
+        int epochs;
 
         public MNISTDataManager()
         {
             dataset = new ObservableCollection<string>();
+            useddatasets = 0;
+            epochs = 0;
         }
 
         // Read embedded data given as text file
         // URL format is "namespace.filename"
+        // Set trainingsets to all read data and epochs to 1
         public void ReadEmbeddedText(string URL)
         {
             var assembly = typeof(MNISTDataManager).GetTypeInfo().Assembly;
@@ -33,6 +42,9 @@ namespace NeuralNetwork
                 while (!reader.EndOfStream)
                     dataset.Add(reader.ReadLine());
             }
+
+            useddatasets = dataset.Count;
+            epochs = 1;
         }
 
         // Clear dataset
@@ -40,6 +52,8 @@ namespace NeuralNetwork
         {
             while (dataset.Count > 0)
                 dataset.RemoveAt(0);
+            useddatasets = 0;
+            epochs = 0;
         }
 
         // Count data (readonly property)
@@ -48,6 +62,40 @@ namespace NeuralNetwork
             get
             {
                 return dataset.Count;
+            }
+        }
+
+        // UsedDataSets (number of data sets used for training)
+        public int UsedDataSets
+        {
+            get
+            {
+                return useddatasets;
+            }
+            set
+            {
+                if (value > dataset.Count)
+                    useddatasets = dataset.Count;
+                if (value < 0)
+                    useddatasets = 0;
+                if (value >= 0 && value <= dataset.Count)
+                    useddatasets = value;
+            }
+        }
+
+        // Epochs (number of training loops)
+        public int Epochs
+        {
+            get
+            {
+                return epochs;
+            }
+            set
+            {
+                if (value < 0)
+                    epochs = 0;
+                else
+                    epochs = value;
             }
         }
 

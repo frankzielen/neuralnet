@@ -40,6 +40,24 @@ namespace NeuralNetwork
             lr = learningrate;
         }
 
+        // Reset neural net by resetting weight matrices
+        public void Reset()
+        {
+            // Set weight matrices randomly by normal distribution given by mean 0 and input node depending std. derivation  
+            var distribution = Normal.WithMeanStdDev(0, Math.Pow(inodes, -0.5));
+            wih = Matrix<double>.Build.Dense(hnodes, inodes, (i, j) => distribution.Sample());
+
+            distribution = Normal.WithMeanStdDev(0, Math.Pow(hnodes, -0.5));
+            who = Matrix<double>.Build.Dense(onodes, hnodes, (i, j) => distribution.Sample());
+        }
+
+        // LearningRate property
+        public double LearningRate
+        {
+            get { return lr; }
+            set { lr = value; }
+        }
+
         // Definition of activationb function
         // We use sigmoid function f(x)=1/(1+e(-x))
         static double ActivationFunction(double x)
@@ -55,7 +73,7 @@ namespace NeuralNetwork
             Vector<double> hidden_outputs = wih * inputs;
 
             // Calculate the signals emerging from hidden layer (=apply activation function)
-            hidden_outputs.MapInplace(ActivationFunction,Zeros.Include);
+            hidden_outputs.MapInplace(ActivationFunction, Zeros.Include);
 
             // Calculate signals into final output layer (=summarize weighted signals)
             Vector<double> final_outputs = who * hidden_outputs;
