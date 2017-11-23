@@ -42,8 +42,6 @@ namespace NeuralNetwork
             {
                 mnistdata.UsedDataSets = (int)e.NewValue;
                 label_useddatasets.Text = mnistdata.UsedDataSets.ToString("N0") + " data sets selected";
-                if (mnistdata.UsedDataSets > 2 * mnistdata.UsedDataSetsDefault && (int)e.OldValue < 2* mnistdata.UsedDataSetsDefault)
-                    DisplayAlert("Warning", "Please be aware that big data sets effect run time.","OK");
             };
 
             // Progress bar
@@ -66,10 +64,19 @@ namespace NeuralNetwork
 
             button.Clicked += async (s, e) =>
             {
+                // Check if another calculation is currently running
                 if (activerun == true)
                 {
                     await DisplayAlert("Warning", "Please wait until end of current calculation.", "OK");
                     return;
+                }
+
+                // Check if selected data set is big 
+                if (mnistdata.UsedDataSets > 2 * mnistdata.UsedDataSetsDefault)
+                {
+                    bool answer = await DisplayAlert("Warning", "Please be aware that big data sets effect run time. Continue?", "Yes", "No");
+                    if (!answer)
+                        return;
                 }
 
                 // Set activerun flag
