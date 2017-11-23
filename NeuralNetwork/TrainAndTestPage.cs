@@ -62,6 +62,7 @@ namespace NeuralNetwork
             Button button = new Button();
             button.Text = string.Format("Start {0}ing",runtype.ToString().ToUpperFirstOnly());
 
+            // Button event
             button.Clicked += async (s, e) =>
             {
                 // Check if another calculation is currently running
@@ -97,12 +98,12 @@ namespace NeuralNetwork
                         // Update progress bar
                         if (i % progressspan == 0)
                         {
-                            await progressbar.ProgressTo((double)i / mnistdata.UsedDataSets, 1, Easing.Linear);
                             label_progress.Text = i.ToString() + " / " + mnistdata.UsedDataSets.ToString();
+                            await progressbar.ProgressTo((double)i / mnistdata.UsedDataSets, 1, Easing.Linear);
                         }
                     }
-                    await progressbar.ProgressTo(1.0, 1, Easing.Linear);
                     label_progress.Text = mnistdata.UsedDataSets.ToString() + " / " + mnistdata.UsedDataSets.ToString();
+                    await progressbar.ProgressTo(1.0, 1, Easing.Linear);
 
                     // Show mesage
                     await DisplayAlert("Result", string.Format("Neural net trained with {0:N0} data sets",mnistdata.UsedDataSets), "OK");
@@ -123,19 +124,19 @@ namespace NeuralNetwork
                         // Update progress bar
                         if (i % progressspan == 0)
                         {
-                            await progressbar.ProgressTo((double)i / mnistdata.UsedDataSets, 1, Easing.Linear);
                             label_progress.Text = i.ToString() + " / " + mnistdata.UsedDataSets.ToString();
+                            await progressbar.ProgressTo((double)i / mnistdata.UsedDataSets, 1, Easing.Linear);
                         }
                     }
-                    await progressbar.ProgressTo(1.0, 1, Easing.Linear);
                     label_progress.Text = mnistdata.UsedDataSets.ToString() + " / " + mnistdata.UsedDataSets.ToString();
+                    await progressbar.ProgressTo(1.0, 1, Easing.Linear);
 
                     // Show of test results
                     await DisplayAlert("Result", string.Format("{0} out of {1} data sets have been identified correctly.\nThis is a {2:P3} performance.", scorecard.Sum(), scorecard.Count, scorecard.Sum() / scorecard.Count), "OK");
                 }
                 // Reset progress bar
-                await progressbar.ProgressTo(0.0, 250, Easing.Linear);
                 label_progress.Text = "Currently no calculation running";
+                await progressbar.ProgressTo(0.0, 250, Easing.Linear);
 
                 // Cancel activerun flag
                 activerun = false;
