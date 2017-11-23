@@ -34,6 +34,7 @@
     <Compile Include="MINSTDataManager.cs" />
     <Compile Include="MenuPage.cs" />
     <Compile Include="TrainAndTestPage.cs" />
+    <Compile Include="Extensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MathNet.Numerics">

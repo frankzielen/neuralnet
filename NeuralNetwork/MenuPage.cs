@@ -4,7 +4,7 @@ using MathNet.Numerics.LinearAlgebra;
 
 namespace NeuralNetwork
 {
-    // Selector if net is trained or tested
+    // Select if net is trained or tested
     public enum NeuralNetRunType { train, test };
 
     public class MenuPage : ContentPage
@@ -84,7 +84,7 @@ namespace NeuralNetwork
                 if (mnisttraindata.CountData==0)
                     mnisttraindata.ReadEmbeddedText(@"NeuralNetwork.MNISTDatasets.mnist_train.csv");
 
-                Navigation.PushAsync(new TrainAndTestPage("Train", neuralnet, mnisttraindata));
+                Navigation.PushAsync(new TrainAndTestPage(NeuralNetRunType.train, neuralnet, mnisttraindata));
             };
 
             // Test neural net with MNIST data
@@ -94,7 +94,7 @@ namespace NeuralNetwork
                 if (mnisttestdata.CountData==0)
                     mnisttestdata.ReadEmbeddedText(@"NeuralNetwork.MNISTDatasets.mnist_test.csv");
 
-                Navigation.PushAsync(new TrainAndTestPage("Test", neuralnet, mnisttestdata));
+                Navigation.PushAsync(new TrainAndTestPage(NeuralNetRunType.test, neuralnet, mnisttestdata));
             };
         }
     }
