@@ -78,23 +78,29 @@ namespace NeuralNetwork
             };
 
             // Train neural net with MNIST data
-            buttontrainnet.Clicked += (s, e) =>
+            buttontrainnet.Clicked += async (s, e) =>
             {
                 // Read train data (if not already read)
                 if (mnisttraindata.CountData==0)
-                    mnisttraindata.ReadEmbeddedText(@"NeuralNetwork.MNISTDatasets.mnist_train.csv");
+                {
+                    await DisplayAlert("Information", "The app needs to load training data sets to memory first. Please wait.","OK");
+                    mnisttraindata.ReadEmbeddedText(@"NeuralNetwork.MNISTDatasets.mnist_train.csv");                   
+                }
 
-                Navigation.PushAsync(new TrainAndTestPage(NeuralNetRunType.train, neuralnet, mnisttraindata));
+                await Navigation.PushAsync(new TrainAndTestPage(NeuralNetRunType.train, neuralnet, mnisttraindata));
             };
 
             // Test neural net with MNIST data
-            buttontestnet.Clicked += (s, e) =>
+            buttontestnet.Clicked += async (s, e) =>
             {
                 // Read test data (if not already read)
-                if (mnisttestdata.CountData==0)
+                if (mnisttestdata.CountData == 0)
+                {
+                    await DisplayAlert("Information", "The app needs to load testing data sets to memory first. Please wait.", "OK");
                     mnisttestdata.ReadEmbeddedText(@"NeuralNetwork.MNISTDatasets.mnist_test.csv");
+                }
 
-                Navigation.PushAsync(new TrainAndTestPage(NeuralNetRunType.test, neuralnet, mnisttestdata));
+                await Navigation.PushAsync(new TrainAndTestPage(NeuralNetRunType.test, neuralnet, mnisttestdata));
             };
         }
     }

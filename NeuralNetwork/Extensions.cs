@@ -3,6 +3,7 @@ namespace NeuralNetwork
 {
     public static class Extensions
     {
+        // Return string with first char upper and reminder chars lower
         public static string ToUpperFirstOnly(this String text)
         {
             switch(text.Length)

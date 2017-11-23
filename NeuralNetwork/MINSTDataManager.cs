@@ -16,6 +16,9 @@ namespace NeuralNetwork
         // Number of data sets used (for training / testing)
         int useddatasets;
 
+        // Initial default value for useddatasets
+        public int UsedDataSetsDefault { get { return 5000; } }
+
         // Epoches used for training
         int epochs;
 
@@ -43,7 +46,7 @@ namespace NeuralNetwork
                     dataset.Add(reader.ReadLine());
             }
 
-            useddatasets = dataset.Count;
+            useddatasets = dataset.Count > UsedDataSetsDefault ? UsedDataSetsDefault : dataset.Count;
             epochs = 1;
         }
 
