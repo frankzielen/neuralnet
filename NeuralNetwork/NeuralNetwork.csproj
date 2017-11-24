@@ -35,6 +35,7 @@
     <Compile Include="MenuPage.cs" />
     <Compile Include="TrainAndTestPage.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="CameraTestPage.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MathNet.Numerics">

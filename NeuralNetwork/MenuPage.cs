@@ -95,14 +95,27 @@ namespace NeuralNetwork
             // Test neural net with MNIST data
             buttontestnet.Clicked += async (s, e) =>
             {
-                // Read test data (if not already read)
-                if (mnisttestdata.CountData == 0)
+                string[] menuitems = { "Digits from MNIST data base", "Take pictures of digits using phone cam" };
+                var answer = await DisplayActionSheet("Select test data source",null,null, menuitems);
+
+                // Use MNIST data base
+                if (answer == menuitems[0])
                 {
-                    await DisplayAlert("Information", "The app needs to load testing data sets to memory first. Please wait.", "OK");
-                    mnisttestdata.ReadEmbeddedText(@"NeuralNetwork.MNISTDatasets.mnist_test.csv");
+                    // Read test data (if not already read)
+                    if (mnisttestdata.CountData == 0)
+                    {
+                        await DisplayAlert("Information", "The app needs to load testing data sets to memory first. Please wait.", "OK");
+                        mnisttestdata.ReadEmbeddedText(@"NeuralNetwork.MNISTDatasets.mnist_test.csv");
+                    }
+
+                    await Navigation.PushAsync(new TrainAndTestPage(NeuralNetRunType.test, neuralnet, mnisttestdata));
                 }
 
-                await Navigation.PushAsync(new TrainAndTestPage(NeuralNetRunType.test, neuralnet, mnisttestdata));
+                // Use Camera and own digits
+                if (answer == menuitems[1])
+                {
+                    await Navigation.PushAsync(new CameraTestPage());
+                }
             };
         }
 
