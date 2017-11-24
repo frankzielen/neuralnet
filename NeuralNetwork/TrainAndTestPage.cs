@@ -151,8 +151,8 @@ namespace NeuralNetwork
                 Children =
                 {
                     label_description1,
-                    slider_useddatasets,
                     label_useddatasets,
+                    slider_useddatasets,
                     button,
                     progressbar,
                     label_progress
@@ -172,6 +172,10 @@ namespace NeuralNetwork
                 // Set button height
                 double height = this.Height * 0.8 * 0.75 / 4;
                 button.HeightRequest = height;
+
+                // Set Margins
+                label_description1.Margin = new Thickness(0, 0, 0, this.Height * 0.1);
+                label_useddatasets.Margin = new Thickness(0, 0, 0, 20);
             };
         }
     }
