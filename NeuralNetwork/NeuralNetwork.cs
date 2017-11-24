@@ -26,9 +26,21 @@ namespace NeuralNetwork
                 }
             };
 
+            // Define global label style
+            var labelStyle = new Style(typeof(Label))
+            {
+                Setters =
+                {
+                    new Setter { Property = Label.TextColorProperty, Value = Color.GhostWhite },
+                    new Setter { Property = Label.HorizontalOptionsProperty, Value = LayoutOptions.Center },
+                    new Setter { Property = Label.HorizontalTextAlignmentProperty, Value = TextAlignment.Center }
+                }
+            };
+
             // Add styles to ResourceDictionary
             Resources = new ResourceDictionary();
             Resources.Add(buttonStyle);
+            Resources.Add(labelStyle);
 
             // Call MenuPage
             MainPage = new NavigationPage(new MenuPage());

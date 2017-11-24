@@ -16,8 +16,17 @@ namespace NeuralNetwork
         // Number of data sets used (for training / testing)
         int useddatasets;
 
-        // Initial default value for useddatasets
-        public int UsedDataSetsDefault { get { return 5000; } }
+        // Initial default value for useddatasets (if length of data set is lager then UsedDataSetDefault)
+        public int UsedDataSetsDefault
+        {
+            get { return 5000; }
+        }
+
+        // Warning value if useddatasets is larger than UsedDataSetWarning
+        public int UsedDataSetsWarning
+        {
+            get { return 10000; }
+        }
 
         // Epoches used for training
         int epochs;

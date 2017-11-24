@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.Distributions;
 
@@ -21,6 +23,14 @@ namespace NeuralNetwork
         // Learning rate
         double lr;
 
+        // Counter for training data sets applied to neural net
+        public int TrainingDataCounter { get; set; }
+
+        // Remember performence of neural net
+        // Performance is given as percentage of correctly identified data sets in a test session
+        // Performance is captured for each test session
+        public ObservableCollection<double> Performance { get; set; }
+
         // Initialize neural net
         public NeuralNet(int inputnodes=3, int hiddennodes=3, int outputnodes=3, double learningrate=0.3)
         {
@@ -38,17 +48,33 @@ namespace NeuralNetwork
 
             // Set learning rate
             lr = learningrate;
+
+            // Set counter for training data sets
+            TrainingDataCounter = 0;
+
+            // Set performance measuring
+            Performance = new ObservableCollection<double>();
         }
 
         // Reset neural net by resetting weight matrices
-        public void Reset()
+        public void Reset(double learningrate = 0.3)
         {
-            // Set weight matrices randomly by normal distribution given by mean 0 and input node depending std. derivation  
+            // Reset weight matrices randomly by normal distribution given by mean 0 and input node depending std. derivation  
             var distribution = Normal.WithMeanStdDev(0, Math.Pow(inodes, -0.5));
             wih = Matrix<double>.Build.Dense(hnodes, inodes, (i, j) => distribution.Sample());
 
             distribution = Normal.WithMeanStdDev(0, Math.Pow(hnodes, -0.5));
             who = Matrix<double>.Build.Dense(onodes, hnodes, (i, j) => distribution.Sample());
+
+            // (Re-)set learning rate
+            lr = learningrate;
+
+            // Reset counter for training data sets
+            TrainingDataCounter = 0;
+
+            // Reset performance measuring
+            while (Performance.Count>0)
+                Performance.RemoveAt(0);
         }
 
         // LearningRate property
@@ -56,6 +82,18 @@ namespace NeuralNetwork
         {
             get { return lr; }
             set { lr = value; }
+        }
+
+        // Get best performance achieved
+        public double BestPerformance
+        {
+            get
+            {
+                double best = 0;
+                foreach (double result in Performance)
+                    best = result > best ? result : best;
+                return best;
+            }
         }
 
         // Definition of activationb function

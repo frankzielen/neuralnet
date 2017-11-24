@@ -24,16 +24,12 @@ namespace NeuralNetwork
             Label label_description1 = new Label
             {
                 Text = string.Format("Please define the number of data sets from the MNIST {0} data base to be used for {0}ing. The {0} data base holds about {1:N0} data sets in total.", runtype.ToString(), mnistdata.CountData),
-                TextColor = Color.GhostWhite,
-                HorizontalOptions = LayoutOptions.Center
             };
 
             // Label for number of training / testing sets used
             Label label_useddatasets = new Label
             {
                 Text = mnistdata.UsedDataSets.ToString("N0") + " data sets selected",
-                TextColor = Color.GhostWhite,
-                HorizontalOptions = LayoutOptions.Center
             };
 
             // Slider for number of training / testing sets used
@@ -54,8 +50,6 @@ namespace NeuralNetwork
             Label label_progress = new Label
             {
                 Text = "Currently no calculation running",
-                TextColor = Color.GhostWhite,
-                HorizontalOptions = LayoutOptions.CenterAndExpand
             };
 
             // Button to start training / testing
@@ -63,6 +57,7 @@ namespace NeuralNetwork
             button.Text = string.Format("Start {0}ing",runtype.ToString().ToUpperFirstOnly());
 
             // Button event
+            // Here training and test sessions are executed
             button.Clicked += async (s, e) =>
             {
                 // Check if another calculation is currently running
@@ -73,7 +68,7 @@ namespace NeuralNetwork
                 }
 
                 // Check if selected data set is big 
-                if (mnistdata.UsedDataSets > 2 * mnistdata.UsedDataSetsDefault)
+                if (mnistdata.UsedDataSets > mnistdata.UsedDataSetsWarning)
                 {
                     bool answer = await DisplayAlert("Warning", "Please be aware that big data sets effect run time. Continue?", "Yes", "No");
                     if (!answer)
@@ -107,6 +102,9 @@ namespace NeuralNetwork
 
                     // Show mesage
                     await DisplayAlert("Result", string.Format("Neural net trained with {0:N0} data sets",mnistdata.UsedDataSets), "OK");
+
+                    // Remeber number of training data sets
+                    neuralnet.TrainingDataCounter += mnistdata.UsedDataSets;
                 }
 
                 if (runtype == NeuralNetRunType.test)
@@ -133,7 +131,11 @@ namespace NeuralNetwork
 
                     // Show of test results
                     await DisplayAlert("Result", string.Format("{0} out of {1} data sets have been identified correctly.\nThis is a {2:P3} performance.", scorecard.Sum(), scorecard.Count, scorecard.Sum() / scorecard.Count), "OK");
+
+                    // Remeber performance result
+                    neuralnet.Performance.Add(scorecard.Sum() / scorecard.Count);
                 }
+
                 // Reset progress bar
                 label_progress.Text = "Currently no calculation running";
                 await progressbar.ProgressTo(0.0, 250, Easing.Linear);
@@ -142,6 +144,7 @@ namespace NeuralNetwork
                 activerun = false;
             };
 
+            // Define page
             Content = new StackLayout
             {
 
@@ -156,15 +159,18 @@ namespace NeuralNetwork
                 }
             };
 
+            // Adjust/update layout when page appers
             this.Appearing += (s, e) =>
             {
                 // Set view dimensions and locations according to page dimensions
-                this.Padding = new Thickness(this.Width / 20, this.Height / 8);
+                this.Padding = new Thickness(this.Width * 0.05, this.Height * 0.1);
 
+                // Set button width to half page width
                 double width = this.Width * 0.5;
                 button.WidthRequest = width;
 
-                double height = this.Height * 0.75 / 4 * 0.75;
+                // Set button height
+                double height = this.Height * 0.8 * 0.75 / 4;
                 button.HeightRequest = height;
             };
         }
