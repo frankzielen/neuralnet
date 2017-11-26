@@ -170,12 +170,12 @@ namespace NeuralNetwork
                 button.WidthRequest = width;
 
                 // Set button height
-                double height = this.Height * 0.8 * 0.75 / 4;
+                double height = this.Height * 0.15;
                 button.HeightRequest = height;
 
                 // Set Margins
-                label_description1.Margin = new Thickness(0, 0, 0, this.Height * 0.1);
-                label_useddatasets.Margin = new Thickness(0, 0, 0, 20);
+                label_description1.Margin = new Thickness(0, 0, 0, this.Height * 0.075);
+                label_useddatasets.Margin = new Thickness(0, 0, 0, this.Height * 0.075);
             };
         }
     }

@@ -25,8 +25,7 @@ namespace NeuralNetwork
             Label description1 = new Label
             {
                 Text = StatusTextNeuralNet(),
-                VerticalOptions = LayoutOptions.Start,
-                Margin = new Thickness(0,0,0,20)
+                VerticalOptions = LayoutOptions.CenterAndExpand,
             };
 
             Button buttonhelp = new Button { Text = "Introduction" };
@@ -59,8 +58,8 @@ namespace NeuralNetwork
                 buttontrainnet.WidthRequest = width;
                 buttontestnet.WidthRequest = width;
 
-                // Set button height to (page height-padding) * 0.7 (space for description) / 4 (to have space for 4 buttons in total)
-                double height = this.Height * 0.9 * 0.6 / 4;
+                // Set button height to 15% of page height
+                double height = this.Height * 0.15;
                 buttonhelp.HeightRequest = height;
                 buttonresetnet.HeightRequest = height;
                 buttontrainnet.HeightRequest = height;
