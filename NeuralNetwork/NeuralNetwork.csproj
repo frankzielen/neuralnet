@@ -28,7 +28,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="NeuralNetwork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NeuralNet.cs" />
     <Compile Include="MINSTDataManager.cs" />
@@ -36,6 +35,8 @@
     <Compile Include="TrainAndTestPage.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="CameraTestPage.cs" />
+    <Compile Include="App.cs" />
+    <Compile Include="IntroductionPage.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MathNet.Numerics">

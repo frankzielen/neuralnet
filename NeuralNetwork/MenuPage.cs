@@ -1,15 +1,16 @@
 ﻿using System;
 using Xamarin.Forms;
-using MathNet.Numerics.LinearAlgebra;
 
 namespace NeuralNetwork
 {
-    // Select if net is trained or tested
+    // NeuralNetRunType is for selecting if net is trained or tested
     public enum NeuralNetRunType { train, test };
 
     public class MenuPage : ContentPage
     {
         // Setup neural net
+        // Input vector must hold a 28x28 pixel bitmap
+        // Output vector mus capture a result 0 to 9
         public NeuralNet neuralnet = new NeuralNet(28 * 28, 100, 10, 0.3);
 
         // Setup MNIST data manager for train and test data
@@ -19,13 +20,12 @@ namespace NeuralNetwork
         public MenuPage()
         {
             // Define GUI
-            Title = "Neural Network";
+            Title = "Neural Net for Handwritten Digits";
             BackgroundColor = Color.SteelBlue;
 
-            Label description1 = new Label
+            Label description = new Label
             {
                 Text = StatusTextNeuralNet(),
-                VerticalOptions = LayoutOptions.CenterAndExpand,
             };
 
             Button buttonhelp = new Button { Text = "Introduction" };
@@ -37,7 +37,7 @@ namespace NeuralNetwork
             {
                 Children =
                 {
-                    description1,
+                    description,
                     buttonhelp,
                     buttonresetnet,
                     buttontrainnet,
@@ -49,24 +49,32 @@ namespace NeuralNetwork
             this.Appearing += (s, e) =>
             {
                 // Set view dimensions and locations according to page dimensions
-                this.Padding = new Thickness(this.Width * 0.05, this.Height * 0.05);
+                this.Padding = new Thickness(Application.Current.MainPage.Width * 0.05, Application.Current.MainPage.Height * 0.05);
 
-                // Set button width to half page width
-                double width = this.Width * 0.5;
+                description.Margin = new Thickness(0, 0, 0, Application.Current.MainPage.Height * 0.05);
+
+                // Set button width acc. to page width
+                double width = Application.Current.MainPage.Width * 0.5;
                 buttonhelp.WidthRequest = width;
                 buttonresetnet.WidthRequest = width;
                 buttontrainnet.WidthRequest = width;
                 buttontestnet.WidthRequest = width;
 
-                // Set button height to 15% of page height
-                double height = this.Height * 0.15;
+                // Set button height acc to page height
+                double height = Application.Current.MainPage.Height * 0.10;
                 buttonhelp.HeightRequest = height;
                 buttonresetnet.HeightRequest = height;
                 buttontrainnet.HeightRequest = height;
                 buttontestnet.HeightRequest = height;
 
                 // Renew text
-                description1.Text = StatusTextNeuralNet();
+                description.Text = StatusTextNeuralNet();
+            };
+
+            // Introduction
+            buttonhelp.Clicked += (s, e) =>
+            {
+                Navigation.PushAsync(new IntroductionPage());
             };
 
             // Reset neural net
@@ -75,27 +83,30 @@ namespace NeuralNetwork
                 neuralnet.Reset();
 
                 // Update text
-                description1.Text = StatusTextNeuralNet();
+                description.Text = StatusTextNeuralNet();
             };
 
-            // Train neural net with MNIST data
+            // Train neural net with MNIST data (which is embedded in the code)
             buttontrainnet.Clicked += async (s, e) =>
             {
                 // Read train data (if not already read)
                 if (mnisttraindata.CountData==0)
                 {
-                    await DisplayAlert("Information", "The app needs to load training data sets to memory first. Please wait.","OK");
+                    await DisplayAlert("Information", "The app needs to load MNIST trainig data to memory first. Please wait.","OK");
                     mnisttraindata.ReadEmbeddedText(@"NeuralNetwork.MNISTDatasets.mnist_train.csv");                   
                 }
 
                 await Navigation.PushAsync(new TrainAndTestPage(NeuralNetRunType.train, neuralnet, mnisttraindata));
             };
 
-            // Test neural net with MNIST data
+            // Test neural net with MNIST data (which is embedded in the code)
             buttontestnet.Clicked += async (s, e) =>
             {
-                string[] menuitems = { "Digits from MNIST data base", "Take pictures of digits using phone cam" };
-                var answer = await DisplayActionSheet("Select test data source",null,null, menuitems);
+                if (neuralnet.TrainingDataCounter == 0)
+                    await DisplayAlert("Information", "You have not trained the net so far. The performance will be very poor.", "OK");
+
+                string[] menuitems = { "MNIST data base", "My own handwriting" };
+                var answer = await DisplayActionSheet("Select source of test data","Cancel",null, menuitems);
 
                 // Use MNIST data base
                 if (answer == menuitems[0])
@@ -103,7 +114,7 @@ namespace NeuralNetwork
                     // Read test data (if not already read)
                     if (mnisttestdata.CountData == 0)
                     {
-                        await DisplayAlert("Information", "The app needs to load testing data sets to memory first. Please wait.", "OK");
+                        await DisplayAlert("Information", "The app needs to load MNIST test data sets to memory first. Please wait.", "OK");
                         mnisttestdata.ReadEmbeddedText(@"NeuralNetwork.MNISTDatasets.mnist_test.csv");
                     }
 
@@ -113,7 +124,7 @@ namespace NeuralNetwork
                 // Use Camera and own digits
                 if (answer == menuitems[1])
                 {
-                    await Navigation.PushAsync(new CameraTestPage());
+                    await Navigation.PushAsync(new CameraTestPage(neuralnet));
                 }
             };
         }

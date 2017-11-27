@@ -16,23 +16,27 @@ namespace NeuralNetwork
         public TrainAndTestPage(NeuralNetRunType runtype, NeuralNet neuralnet, MNISTDataManager mnistdata)
         {
             // Define GUI
-            Title = string.Format("{0} Neural Net", runtype.ToString().ToUpperFirstOnly());
 
+            // Page properties
+            Title = string.Format("{0} Neural Net", runtype.ToString().ToUpperFirstOnly());
             BackgroundColor = Color.SteelBlue;
+            Padding = new Thickness(Application.Current.MainPage.Width * 0.05, Application.Current.MainPage.Height * 0.05);
 
             // Label for description
-            Label label_description1 = new Label
+            Label description = new Label
             {
-                Text = string.Format("Please define the number of data sets from the MNIST {0} data base to be used for {0}ing. The {0} data base holds about {1:N0} data sets in total.", runtype.ToString(), mnistdata.CountData),
+                Text = string.Format("Please define the number of data sets from the MNIST {0} data base to be used for {0}ing. Each data set represents one digit. The {0} data base holds about {1:N0} data sets in total.", runtype.ToString(), mnistdata.CountData),
+                Margin = new Thickness(0, 0, 0, Application.Current.MainPage.Height * 0.075)
             };
 
             // Label for number of training / testing sets used
             Label label_useddatasets = new Label
             {
                 Text = mnistdata.UsedDataSets.ToString("N0") + " data sets selected",
+                Margin = new Thickness(0, 0, 0, Application.Current.MainPage.Height * 0.075)
             };
 
-            // Slider for number of training / testing sets used
+            // Slider for number of data sets used for training / testing 
             Slider slider_useddatasets = new Slider(0, mnistdata.CountData, mnistdata.UsedDataSets);
             slider_useddatasets.ValueChanged += (s, e) =>
             {
@@ -41,10 +45,7 @@ namespace NeuralNetwork
             };
 
             // Progress bar
-            ProgressBar progressbar = new ProgressBar
-            {
-                Progress = 0
-            };
+            ProgressBar progressbar = new ProgressBar { Progress = 0 };
 
             // Label for showing progress
             Label label_progress = new Label
@@ -53,8 +54,27 @@ namespace NeuralNetwork
             };
 
             // Button to start training / testing
-            Button button = new Button();
-            button.Text = string.Format("Start {0}ing",runtype.ToString().ToUpperFirstOnly());
+            Button button = new Button
+            {
+                Text = string.Format("Start {0}ing", runtype.ToString().ToUpperFirstOnly()),
+                WidthRequest = Application.Current.MainPage.Width * 0.5,
+                HeightRequest = Application.Current.MainPage.Height * 0.10
+            };
+
+            // Define page
+            Content = new StackLayout
+            {
+
+                Children =
+                {
+                    description,
+                    label_useddatasets,
+                    slider_useddatasets,
+                    button,
+                    progressbar,
+                    label_progress
+                }
+            };
 
             // Button event
             // Here training and test sessions are executed
@@ -142,40 +162,6 @@ namespace NeuralNetwork
 
                 // Cancel activerun flag
                 activerun = false;
-            };
-
-            // Define page
-            Content = new StackLayout
-            {
-
-                Children =
-                {
-                    label_description1,
-                    label_useddatasets,
-                    slider_useddatasets,
-                    button,
-                    progressbar,
-                    label_progress
-                }
-            };
-
-            // Adjust/update layout when page appers
-            this.Appearing += (s, e) =>
-            {
-                // Set view dimensions and locations according to page dimensions
-                this.Padding = new Thickness(this.Width * 0.05, this.Height * 0.1);
-
-                // Set button width to half page width
-                double width = this.Width * 0.5;
-                button.WidthRequest = width;
-
-                // Set button height
-                double height = this.Height * 0.15;
-                button.HeightRequest = height;
-
-                // Set Margins
-                label_description1.Margin = new Thickness(0, 0, 0, this.Height * 0.075);
-                label_useddatasets.Margin = new Thickness(0, 0, 0, this.Height * 0.075);
             };
         }
     }
