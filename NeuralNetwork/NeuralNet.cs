@@ -6,6 +6,7 @@ using MathNet.Numerics.Distributions;
 
 namespace NeuralNetwork
 {
+    // This class represents the neural net including training and testing methods
     public class NeuralNet
     {
         // Number of nodes in input, hidden and output layer

@@ -6,6 +6,7 @@ namespace NeuralNetwork
     // NeuralNetRunType is for selecting if net is trained or tested
     public enum NeuralNetRunType { train, test };
 
+    // The menue page as starting point of app
     public class MenuPage : ContentPage
     {
         // Setup neural net
@@ -29,9 +30,10 @@ namespace NeuralNetwork
             };
 
             Button buttonhelp = new Button { Text = "Introduction" };
-            Button buttonresetnet = new Button { Text = "Reset Neural Net" };
-            Button buttontrainnet = new Button { Text = "Train Neural Net" };
-            Button buttontestnet = new Button { Text = "Test Neural Net" };
+            Button buttonresetnet = new Button { Text = "Reset Net" };
+            Button buttontrainnet = new Button { Text = "Train Net with MNIST Data" };
+            Button buttontestnet = new Button { Text = "Test Net with MNIST Data" };
+            Button buttonhandnet = new Button { Text = "Try Net with Handwriting" };
 
             Content = new StackLayout
             {
@@ -39,9 +41,10 @@ namespace NeuralNetwork
                 {
                     description,
                     buttonhelp,
-                    buttonresetnet,
                     buttontrainnet,
-                    buttontestnet
+                    buttontestnet,
+                    buttonhandnet,
+                    buttonresetnet
                 }
             };
 
@@ -54,11 +57,12 @@ namespace NeuralNetwork
                 description.Margin = new Thickness(0, 0, 0, Application.Current.MainPage.Height * 0.05);
 
                 // Set button width acc. to page width
-                double width = Application.Current.MainPage.Width * 0.5;
+                double width = Application.Current.MainPage.Width * 0.8;
                 buttonhelp.WidthRequest = width;
                 buttonresetnet.WidthRequest = width;
                 buttontrainnet.WidthRequest = width;
                 buttontestnet.WidthRequest = width;
+                buttonhandnet.WidthRequest = width;
 
                 // Set button height acc to page height
                 double height = Application.Current.MainPage.Height * 0.10;
@@ -66,12 +70,13 @@ namespace NeuralNetwork
                 buttonresetnet.HeightRequest = height;
                 buttontrainnet.HeightRequest = height;
                 buttontestnet.HeightRequest = height;
+                buttonhandnet.HeightRequest = height;
 
                 // Renew text
                 description.Text = StatusTextNeuralNet();
             };
 
-            // Introduction
+            // Show introduction
             buttonhelp.Clicked += (s, e) =>
             {
                 Navigation.PushAsync(new IntroductionPage());
@@ -82,7 +87,7 @@ namespace NeuralNetwork
             {
                 neuralnet.Reset();
 
-                // Update text
+                // Update status text
                 description.Text = StatusTextNeuralNet();
             };
 
@@ -104,28 +109,24 @@ namespace NeuralNetwork
             {
                 if (neuralnet.TrainingDataCounter == 0)
                     await DisplayAlert("Information", "You have not trained the net so far. The performance will be very poor.", "OK");
-
-                string[] menuitems = { "MNIST data base", "My own handwriting" };
-                var answer = await DisplayActionSheet("Select source of test data","Cancel",null, menuitems);
-
-                // Use MNIST data base
-                if (answer == menuitems[0])
+                
+                // Read test data (if not already read)
+                if (mnisttestdata.CountData == 0)
                 {
-                    // Read test data (if not already read)
-                    if (mnisttestdata.CountData == 0)
-                    {
-                        await DisplayAlert("Information", "The app needs to load MNIST test data sets to memory first. Please wait.", "OK");
-                        mnisttestdata.ReadEmbeddedText(@"NeuralNetwork.MNISTDatasets.mnist_test.csv");
-                    }
-
-                    await Navigation.PushAsync(new TrainAndTestPage(NeuralNetRunType.test, neuralnet, mnisttestdata));
+                    await DisplayAlert("Information", "The app needs to load MNIST test data sets to memory first. Please wait.", "OK");
+                    mnisttestdata.ReadEmbeddedText(@"NeuralNetwork.MNISTDatasets.mnist_test.csv");
                 }
 
-                // Use Camera and own digits
-                if (answer == menuitems[1])
-                {
+                await Navigation.PushAsync(new TrainAndTestPage(NeuralNetRunType.test, neuralnet, mnisttestdata));
+            };
+
+            // Test and train net with own handwriting
+            buttonhandnet.Clicked += async (s, e) =>
+            {
+                if (neuralnet.TrainingDataCounter == 0)
+                    await DisplayAlert("Information", "You have not trained the net so far. The performance will be very poor.", "OK");
+                
                     await Navigation.PushAsync(new CameraTestPage(neuralnet));
-                }
             };
         }
 

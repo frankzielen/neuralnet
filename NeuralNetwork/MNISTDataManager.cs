@@ -8,6 +8,7 @@ using MathNet.Numerics.LinearAlgebra;
 
 namespace NeuralNetwork
 {
+    // This class enables to load and manage the MNIST data, esp. to get input/output data for training & testing the neural net
     public class MNISTDataManager
     {
         // Data given as string collection

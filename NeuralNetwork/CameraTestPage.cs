@@ -7,6 +7,7 @@ using SkiaSharp.Views.Forms;
 
 namespace NeuralNetwork
 {
+    // Opens a page that allows the user to take a photo of a handwritten figure and to test it with the neural net
     public class CameraTestPage : ContentPage
     {
         // Neural net
@@ -32,7 +33,7 @@ namespace NeuralNetwork
             // Define GUI
 
             // Page properties
-            Title = "Test Neural Net";
+            Title = "Handwriting";
             BackgroundColor = Color.SteelBlue;
             Padding = new Thickness(Application.Current.MainPage.Width * 0.05, Application.Current.MainPage.Height * 0.05);
 
@@ -194,12 +195,9 @@ namespace NeuralNetwork
 
             // Ask neural net
             Vector<double> answer = neuralnet.Query(input);
-            int result = answer.AbsoluteMaximumIndex();
-            double probability = answer.AbsoluteMaximum() / answer.Sum();
 
             // Output
-            Navigation.PushAsync(new ResultsSinglePage(answer));
-            //DisplayAlert("Result", string.Format("The digit is {0}.\n(probability: {1:P1})", result, probability), "OK");
+            Navigation.PushAsync(new ResultsSinglePage(neuralnet, input, answer));
         }
 
         // Generate the MNIST pixel data array from (greyscaled) bitmap

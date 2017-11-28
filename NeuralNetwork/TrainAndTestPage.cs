@@ -4,12 +4,11 @@ using MathNet.Numerics.LinearAlgebra;
 
 namespace NeuralNetwork
 {
+    // Page for training or testing the net
+    // This is given by enum runtype which can be "train" or "test"
+    // mnistdata must hold the appropriate data set
     public class TrainAndTestPage : ContentPage
     {
-        // Page for training or testing the net
-        // This is given by enum runtype which can be "train" or "test"
-        // mnistdata must hold the appropriate data set
-
         // Indicates if training / testing is currently running
         bool activerun = false; 
 
@@ -18,7 +17,7 @@ namespace NeuralNetwork
             // Define GUI
 
             // Page properties
-            Title = string.Format("{0} Neural Net", runtype.ToString().ToUpperFirstOnly());
+            Title = string.Format("{0} Net", runtype.ToString().ToUpperFirstOnly());
             BackgroundColor = Color.SteelBlue;
             Padding = new Thickness(Application.Current.MainPage.Width * 0.05, Application.Current.MainPage.Height * 0.05);
 
@@ -123,7 +122,7 @@ namespace NeuralNetwork
                     // Show mesage
                     await DisplayAlert("Result", string.Format("Neural net trained with {0:N0} data sets",mnistdata.UsedDataSets), "OK");
 
-                    // Remeber number of training data sets
+                    // Remember number of training data sets
                     neuralnet.TrainingDataCounter += mnistdata.UsedDataSets;
                 }
 
@@ -150,7 +149,7 @@ namespace NeuralNetwork
                     await progressbar.ProgressTo(1.0, 1, Easing.Linear);
 
                     // Show of test results
-                    await DisplayAlert("Result", string.Format("{0} out of {1} data sets have been identified correctly.\nThis is a {2:P3} performance.", scorecard.Sum(), scorecard.Count, scorecard.Sum() / scorecard.Count), "OK");
+                    await DisplayAlert("Result", string.Format("{0} out of {1} data sets have been identified correctly.\nPerformance: {2:P3}", scorecard.Sum(), scorecard.Count, scorecard.Sum() / scorecard.Count), "OK");
 
                     // Remeber performance result
                     neuralnet.Performance.Add(scorecard.Sum() / scorecard.Count);

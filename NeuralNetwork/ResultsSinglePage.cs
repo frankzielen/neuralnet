@@ -4,9 +4,11 @@ using MathNet.Numerics.LinearAlgebra;
 
 namespace NeuralNetwork
 {
+    // This class represents the result of testing a handwritten digit. It's also possible to use the pixel data for training.
+    // Parameters are the neural net, the input data vector (=pixel data) and the result calculated from the neural net
     public class ResultsSinglePage : ContentPage
     {
-        public ResultsSinglePage(Vector<double> result)
+        public ResultsSinglePage(NeuralNet neuralnet, Vector<double> input, Vector<double> result)
         {
             // Define GUI
 
@@ -16,7 +18,7 @@ namespace NeuralNetwork
             Padding = new Thickness(Application.Current.MainPage.Width * 0.05, Application.Current.MainPage.Height * 0.05);
 
 
-            // Define style for labels in grid
+            // Define styles for labels in grid
             var labelgridStyle = new Style(typeof(Label))
             {
                 Setters =
@@ -52,7 +54,7 @@ namespace NeuralNetwork
                 }
             };
 
-            // Define 11x3 grid
+            // Define 11x3 grid for representing results 
             Grid grid = new Grid();
 
             grid.BackgroundColor = Color.GhostWhite;
@@ -90,7 +92,77 @@ namespace NeuralNetwork
                
             }
 
-            Content = grid;
+            // Define 2x3 grid for training net with own handwriting
+            Grid grid2 = new Grid();
+
+            grid2.BackgroundColor = Color.Transparent;
+            grid2.ColumnSpacing = 0;
+            grid2.RowSpacing = 0;
+            grid2.HorizontalOptions = LayoutOptions.Center;
+
+            grid2.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(6, GridUnitType.Star) });
+            grid2.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(2, GridUnitType.Star) });
+            grid2.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star) });
+
+            grid2.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+            grid2.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+
+            // Place content
+            grid2.Children.Add(new Label { Text = "Net's answer:", Style = labelgridStyle, HorizontalTextAlignment = TextAlignment.Start }, 0, 0);
+            grid2.Children.Add(new Label { Text = "Select correct answer:", Style = labelgridStyle, HorizontalTextAlignment = TextAlignment.Start }, 0, 1);
+            grid2.Children.Add(new Label { Text = result.AbsoluteMaximumIndex().ToString(), Style = labelgridStyle }, 1, 0);
+
+            // labelresult keeps correct answer in Text property
+            Label labelresult = new Label { Text = result.AbsoluteMaximumIndex().ToString(), Style = labelgridStyle };
+            grid2.Children.Add(labelresult, 1, 1);
+
+            // Define and place stepper to change correct answer
+            Stepper stepper = new Stepper
+            {
+                Value = (int)result.AbsoluteMaximumIndex(),
+                Minimum = 0,
+                Maximum = 9,
+                Increment = 1,
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.Center,
+                BackgroundColor = Color.GhostWhite
+            };
+            grid2.Children.Add(stepper, 2, 3, 0, 2);
+
+            // Change labelresult text is stepper is used
+            stepper.ValueChanged += (s, e) => { labelresult.Text = e.NewValue.ToString(); };
+
+            // Define button to train net
+            Button button = new Button
+            {
+                Text = "Train net with this figure",
+                WidthRequest = Application.Current.MainPage.Width * 0.8,
+                HeightRequest = Application.Current.MainPage.Height * 0.10,
+                VerticalOptions = LayoutOptions.Center,
+            };
+
+            // Train net
+            button.Clicked += (s, e) =>
+            {
+                // Determine output vector from correct answer
+                Vector<double> output = Vector<double>.Build.Dense(10, 0.01);
+                output[Convert.ToInt32(labelresult.Text)] = 0.99;
+
+                // Train net with this data set
+                neuralnet.Train(input, output);
+
+                // Increase number of training data sets used so far
+                neuralnet.TrainingDataCounter++;
+
+                DisplayAlert("Information","Net trained.","OK");
+            };
+
+            // Define page
+            Content = new StackLayout
+            {
+                Children = { grid, grid2, button },
+                Spacing = Application.Current.MainPage.Height * 0.05
+            };
         }
     }
 }
