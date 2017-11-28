@@ -198,7 +198,8 @@ namespace NeuralNetwork
             double probability = answer.AbsoluteMaximum() / answer.Sum();
 
             // Output
-            DisplayAlert("Result", string.Format("The digit is {0}.\n(probability: {1:P1})", result, probability), "OK");
+            Navigation.PushAsync(new ResultsSinglePage(answer));
+            //DisplayAlert("Result", string.Format("The digit is {0}.\n(probability: {1:P1})", result, probability), "OK");
         }
 
         // Generate the MNIST pixel data array from (greyscaled) bitmap

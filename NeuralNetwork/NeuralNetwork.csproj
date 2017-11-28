@@ -37,6 +37,7 @@
     <Compile Include="CameraTestPage.cs" />
     <Compile Include="App.cs" />
     <Compile Include="IntroductionPage.cs" />
+    <Compile Include="ResultsSinglePage.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MathNet.Numerics">
