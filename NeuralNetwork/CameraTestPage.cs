@@ -215,7 +215,7 @@ namespace NeuralNetwork
                 {
                     // Due to grayscale all pixels have same RGB values, however, we generate the average (we could also take the RED value, for example)
                     // Furthermore, in MNIST 255 is black and 0 is zero, so we have to "mirror" the pixel values
-                    MNISTpixelarray[y * 28 + x] = (byte)(255 - (bitmap.GetPixel(x, y).Red + bitmap.GetPixel(x, y).Green + bitmap.GetPixel(x, y).Blue) / 3);
+                    MNISTpixelarray[y * 28 + x] = (byte)(255 - (bitmap.GetPixel(x, 27-y).Red + bitmap.GetPixel(x, 27-y).Green + bitmap.GetPixel(x, 27-y).Blue) / 3);
                 }
             }
         }
