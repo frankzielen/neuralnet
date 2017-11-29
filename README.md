@@ -1,4 +1,4 @@
 # Neutral Net for Handwriting
 
-Xamarin cross-plattform app
+Xamarin cross-platform app
 (currently for iOS only)
