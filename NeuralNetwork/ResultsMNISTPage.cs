@@ -5,6 +5,10 @@ using MathNet.Numerics.LinearAlgebra;
 namespace NeuralNetwork
 {
     // Show overall and detailed results of testing with MNIST data
+    // User can swipe through data sets and sees image of MNIST digit plus result of net
+    // *******************
+    // NOT INCLUDED SO FAR
+    // *******************
     public class ResultsMNISTPage : ContentPage
     {
         public ResultsMNISTPage(MNISTDataManager mnistdata)
