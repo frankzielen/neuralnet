@@ -72,8 +72,6 @@
     <Folder Include="MNISTDatasets\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MNISTDatasets\mnist_test_10.csv" />
-    <EmbeddedResource Include="MNISTDatasets\mnist_train_100.csv" />
     <EmbeddedResource Include="MNISTDatasets\mnist_test.csv" />
     <EmbeddedResource Include="MNISTDatasets\mnist_train.csv" />
   </ItemGroup>
