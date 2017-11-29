@@ -108,7 +108,7 @@ namespace NeuralNetwork
             buttontestnet.Clicked += async (s, e) =>
             {
                 if (neuralnet.TrainingDataCounter == 0)
-                    await DisplayAlert("Information", "You have not trained the net so far. The performance will be very poor.", "OK");
+                    await DisplayAlert("Information", "You have not trained the net so far. The initial performance will be very poor.", "OK");
                 
                 // Read test data (if not already read)
                 if (mnisttestdata.CountData == 0)
@@ -124,7 +124,7 @@ namespace NeuralNetwork
             buttonhandnet.Clicked += async (s, e) =>
             {
                 if (neuralnet.TrainingDataCounter == 0)
-                    await DisplayAlert("Information", "You have not trained the net so far. The performance will be very poor.", "OK");
+                    await DisplayAlert("Information", "You have not trained the net so far. The initial performance will be very poor.", "OK");
                 
                     await Navigation.PushAsync(new CameraTestPage(neuralnet));
             };
@@ -133,7 +133,7 @@ namespace NeuralNetwork
         // Get status text for neural net
         string StatusTextNeuralNet()
         {
-            return String.Format("Neural net trained with {0:N0} data sets\nBest performance in testing:\n{1:P3}", neuralnet.TrainingDataCounter, neuralnet.BestPerformance);
+            return String.Format("Neural net trained with {0:N0} data set{2}\nBest performance in testing:\n{1:P3}", neuralnet.TrainingDataCounter, neuralnet.BestPerformance, (neuralnet.TrainingDataCounter == 1 ? "" : "s"));
         }
     }
 }

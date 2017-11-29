@@ -40,7 +40,7 @@ namespace NeuralNetwork
             // Define label
             Label description = new Label
             {
-                Text = "Here you can test the neural net with your own handwriting!\n" +
+                Text = "Here you can test and teach the neural net with your own handwriting!\n" +
                     "Just take a picture of a single digit (0..9) written on a white background. The figure should be centered and 80% of the vertical picture size.",
             };
 

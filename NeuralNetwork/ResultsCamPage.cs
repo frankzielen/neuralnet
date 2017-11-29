@@ -154,7 +154,7 @@ namespace NeuralNetwork
                 // Increase number of training data sets used so far
                 neuralnet.TrainingDataCounter++;
 
-                DisplayAlert("Information","Net trained.","OK");
+                DisplayAlert("Training completed",string.Format("Net trained with {0} digit{1} so far.",neuralnet.TrainingDataCounter, (neuralnet.TrainingDataCounter == 1 ? "" : "s")), "OK");
             };
 
             // Define page
