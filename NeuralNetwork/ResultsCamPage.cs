@@ -6,9 +6,9 @@ namespace NeuralNetwork
 {
     // This class represents the result of testing a handwritten digit. It's also possible to use the pixel data for training.
     // Parameters are the neural net, the input data vector (=pixel data) and the result calculated from the neural net
-    public class ResultsSinglePage : ContentPage
+    public class ResultsCamPage : ContentPage
     {
-        public ResultsSinglePage(NeuralNet neuralnet, Vector<double> input, Vector<double> result)
+        public ResultsCamPage(NeuralNet neuralnet, Vector<double> input, Vector<double> result)
         {
             // Define GUI
 

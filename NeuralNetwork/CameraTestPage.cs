@@ -23,7 +23,7 @@ namespace NeuralNetwork
         byte[] MNISTpixelarray = new byte[28 * 28];
 
         // Contrast applied to grayscale transformation (to sharpen the lines in the picture)
-        float contrast = 0.8f;
+        float contrast = 0.9f;
 
         public CameraTestPage(NeuralNet neuralnet)
         {
@@ -197,7 +197,7 @@ namespace NeuralNetwork
             Vector<double> answer = neuralnet.Query(input);
 
             // Output
-            Navigation.PushAsync(new ResultsSinglePage(neuralnet, input, answer));
+            Navigation.PushAsync(new ResultsCamPage(neuralnet, input, answer));
         }
 
         // Generate the MNIST pixel data array from (greyscaled) bitmap
@@ -215,7 +215,7 @@ namespace NeuralNetwork
                 {
                     // Due to grayscale all pixels have same RGB values, however, we generate the average (we could also take the RED value, for example)
                     // Furthermore, in MNIST 255 is black and 0 is zero, so we have to "mirror" the pixel values
-                    MNISTpixelarray[y * 28 + x] = (byte)(255 - (bitmap.GetPixel(x, 27-y).Red + bitmap.GetPixel(x, 27-y).Green + bitmap.GetPixel(x, 27-y).Blue) / 3);
+                    MNISTpixelarray[y * 28 + x] = (byte)(255 - (bitmap.GetPixel(x, y).Red + bitmap.GetPixel(x, y).Green + bitmap.GetPixel(x, y).Blue) / 3);
                 }
             }
         }
