@@ -5,6 +5,8 @@ using System.Linq;
 using Foundation;
 using UIKit;
 
+using CarouselView.FormsPlugin.iOS;
+
 namespace NeuralNetwork.iOS
 {
     [Register("AppDelegate")]
@@ -13,6 +15,9 @@ namespace NeuralNetwork.iOS
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
             global::Xamarin.Forms.Forms.Init();
+
+            // Init Nuget package CarouselView.FormsPlugin
+            CarouselViewRenderer.Init();
 
             LoadApplication(new App());
 

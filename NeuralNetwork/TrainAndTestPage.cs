@@ -31,16 +31,16 @@ namespace NeuralNetwork
             // Label for number of training / testing sets used
             Label label_useddatasets = new Label
             {
-                Text = mnistdata.UsedDataSets.ToString("N0") + " data sets selected",
+                Text = String.Format("{0:N0} data set{1} selected", mnistdata.UsedDataSets, mnistdata.UsedDataSets == 0 ? "" : "s"),
                 Margin = new Thickness(0, 0, 0, Application.Current.MainPage.Height * 0.075)
             };
 
             // Slider for number of data sets used for training / testing 
-            Slider slider_useddatasets = new Slider(0, mnistdata.CountData, mnistdata.UsedDataSets);
+            Slider slider_useddatasets = new Slider(1, mnistdata.CountData, mnistdata.UsedDataSets);
             slider_useddatasets.ValueChanged += (s, e) =>
             {
                 mnistdata.UsedDataSets = (int)e.NewValue;
-                label_useddatasets.Text = mnistdata.UsedDataSets.ToString("N0") + " data sets selected";
+                label_useddatasets.Text = String.Format("{0:N0} data set{1} selected", mnistdata.UsedDataSets, mnistdata.UsedDataSets == 0 ? "" : "s");
             };
 
             // Progress bar
@@ -129,14 +129,23 @@ namespace NeuralNetwork
                 if (runtype == NeuralNetRunType.test)
                 {
                     // Setup scorecard for capturing test results
-                    Vector<double> scorecard = Vector<double>.Build.Dense(mnistdata.UsedDataSets);
+                    // digittotal counts all trained figures, digitcorrect the ones that are identified correctly
+                    Vector<double> digittotal = Vector<double>.Build.Dense(10);
+                    Vector<double> digitcorrect = Vector<double>.Build.Dense(10);
 
                     // Testing loop
                     for (int i = 0; i < mnistdata.UsedDataSets; i++)
                     {
+                        // Increase counter for testet digit (0..9)
+                        int number = mnistdata.Number(i);
+                        digittotal[number]++;
+
+                        // Ask net
                         Vector<double> answer = neuralnet.Query(mnistdata.Input(i));
-                        if (answer.AbsoluteMaximumIndex() == mnistdata.Number(i))
-                            scorecard[i] = 1.0;
+
+                        // Check if it's correct
+                        if (answer.AbsoluteMaximumIndex() == number)
+                            digitcorrect[number]++;
 
                         // Update progress bar
                         if (i % progressspan == 0)
@@ -148,11 +157,11 @@ namespace NeuralNetwork
                     label_progress.Text = mnistdata.UsedDataSets.ToString() + " / " + mnistdata.UsedDataSets.ToString();
                     await progressbar.ProgressTo(1.0, 1, Easing.Linear);
 
-                    // Show of test results
-                    await DisplayAlert("Result", string.Format("{0} out of {1} data sets have been identified correctly.\nPerformance: {2:P3}", scorecard.Sum(), scorecard.Count, scorecard.Sum() / scorecard.Count), "OK");
-
                     // Remeber performance result
-                    neuralnet.Performance.Add(scorecard.Sum() / scorecard.Count);
+                    neuralnet.Performance.Add(digitcorrect.Sum() / digittotal.Sum());
+
+                    // Show test results
+                    await Navigation.PushAsync(new ResultsMNISTPage(neuralnet, mnistdata, digittotal, digitcorrect));
                 }
 
                 // Reset progress bar
