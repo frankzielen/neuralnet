@@ -8,9 +8,11 @@ using Android.Views;
 using Android.Widget;
 using Android.OS;
 
+using CarouselView.FormsPlugin.Android;
+
 namespace NeuralNetwork.Droid
 {
-    [Activity(Label = "NeuralNetwork.Droid", Icon = "@drawable/icon", Theme = "@style/MyTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(Label = "NeuralNetwork.Droid", Icon = "@drawable/icon", Theme = "@style/MyTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation, ScreenOrientation = ScreenOrientation.SensorPortrait)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         protected override void OnCreate(Bundle bundle)
@@ -21,6 +23,9 @@ namespace NeuralNetwork.Droid
             base.OnCreate(bundle);
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
+
+            // Init nuget packages
+            CarouselViewRenderer.Init();
 
             LoadApplication(new App());
         }

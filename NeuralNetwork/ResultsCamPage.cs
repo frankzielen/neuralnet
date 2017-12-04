@@ -100,42 +100,46 @@ namespace NeuralNetwork
             grid2.RowSpacing = 0;
             grid2.HorizontalOptions = LayoutOptions.Center;
 
-            grid2.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(6, GridUnitType.Star) });
+            grid2.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(8, GridUnitType.Star) });
             grid2.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(2, GridUnitType.Star) });
-            grid2.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star) });
+            grid2.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            grid2.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(2, GridUnitType.Star) });
+            grid2.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            grid2.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(2, GridUnitType.Star) });
 
             grid2.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
             grid2.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
 
             // Place content
             grid2.Children.Add(new Label { Text = "Net's answer:", Style = labelgridStyle, HorizontalTextAlignment = TextAlignment.Start }, 0, 0);
-            grid2.Children.Add(new Label { Text = "Select correct answer:", Style = labelgridStyle, HorizontalTextAlignment = TextAlignment.Start }, 0, 1);
+            grid2.Children.Add(new Label { Text = "Correct answer:", Style = labelgridStyle, HorizontalTextAlignment = TextAlignment.Start }, 0, 1);
             grid2.Children.Add(new Label { Text = result.AbsoluteMaximumIndex().ToString(), Style = labelgridStyle }, 1, 0);
 
             // labelresult keeps correct answer in Text property
             Label labelresult = new Label { Text = result.AbsoluteMaximumIndex().ToString(), Style = labelgridStyle };
             grid2.Children.Add(labelresult, 1, 1);
 
-            // Define and place stepper to change correct answer
-            Stepper stepper = new Stepper
+            // Buttons for changing value of correct answer
+            Button buttondown = new Button() { Text = "-" };
+            grid2.Children.Add(buttondown, 3, 4, 0, 2);
+            buttondown.Clicked += (s, e) =>
             {
-                Value = (int)result.AbsoluteMaximumIndex(),
-                Minimum = 0,
-                Maximum = 9,
-                Increment = 1,
-                HorizontalOptions = LayoutOptions.Center,
-                VerticalOptions = LayoutOptions.Center,
-                BackgroundColor = Color.GhostWhite
+                if (Convert.ToInt32(labelresult.Text) > 0)
+                    labelresult.Text = (Convert.ToInt32(labelresult.Text) - 1).ToString();
             };
-            grid2.Children.Add(stepper, 2, 3, 0, 2);
 
-            // Change labelresult text is stepper is used
-            stepper.ValueChanged += (s, e) => { labelresult.Text = e.NewValue.ToString(); };
+            Button buttonup = new Button() { Text = "+" };
+            grid2.Children.Add(buttonup, 5, 6, 0, 2);
+            buttonup.Clicked += (s, e) =>
+            {
+                if (Convert.ToInt32(labelresult.Text) < 9)
+                    labelresult.Text = (Convert.ToInt32(labelresult.Text) + 1).ToString();
+            };
 
             // Define button to train net
             Button button = new Button
             {
-                Text = "Train net with this figure",
+                Text = "Train this Digit",
                 WidthRequest = Application.Current.MainPage.Width * 0.8,
                 HeightRequest = Application.Current.MainPage.Height * 0.10,
                 VerticalOptions = LayoutOptions.Center,

@@ -40,6 +40,7 @@
     <Compile Include="ResultsCamPage.cs" />
     <Compile Include="ResultsMNISTPage.cs" />
     <Compile Include="ResultsDetailsPage.cs" />
+    <Compile Include="DrawDigitPage.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MathNet.Numerics">

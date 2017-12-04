@@ -16,7 +16,7 @@ namespace NeuralNetwork
                 {
                     new Setter { Property = Button.TextColorProperty, Value = Color.SteelBlue },
                     new Setter { Property = Button.BackgroundColorProperty, Value = Color.GhostWhite },
-                    new Setter { Property = Button.BorderColorProperty, Value = Color.LightSteelBlue },
+                    new Setter { Property = Button.BorderColorProperty, Value = Color.GhostWhite },
                     new Setter { Property = Button.BorderWidthProperty, Value = 1 },
                     new Setter { Property = Button.BorderRadiusProperty, Value = 10 },
                     new Setter { Property = Button.FontSizeProperty, Value = Device.GetNamedSize(NamedSize.Medium, typeof(Button)) },
@@ -36,6 +36,10 @@ namespace NeuralNetwork
                     new Setter { Property = Label.HorizontalTextAlignmentProperty, Value = TextAlignment.Center }
                 }
             };
+            if (Device.RuntimePlatform == Device.Android)
+                labelStyle.Setters.Add(new Setter { Property = Label.FontSizeProperty, Value = Device.GetNamedSize(NamedSize.Medium, typeof(Label)) });
+            else
+                labelStyle.Setters.Add(new Setter { Property = Label.FontSizeProperty, Value = Device.GetNamedSize(NamedSize.Medium, typeof(Label)) });
 
             // Add styles to ResourceDictionary
             Resources = new ResourceDictionary();
@@ -46,8 +50,17 @@ namespace NeuralNetwork
             MainPage = new NavigationPage(new MenuPage());
 
             // Set color for navigation bar
-            (MainPage as NavigationPage).BarBackgroundColor = Color.SteelBlue;
-            (MainPage as NavigationPage).BarTextColor = Color.GhostWhite;
+            // On Android color of Back-Button does not change (BUG!), so we define alternative colors
+            if (Device.RuntimePlatform == Device.Android)
+            {
+                (MainPage as NavigationPage).BarBackgroundColor = Color.DarkOrange;
+                (MainPage as NavigationPage).BarTextColor = Color.GhostWhite;                
+            }
+            else
+            {
+                (MainPage as NavigationPage).BarBackgroundColor = Color.GhostWhite;
+                (MainPage as NavigationPage).BarTextColor = Color.SteelBlue;
+            }                
         }
 
         protected override void OnStart()

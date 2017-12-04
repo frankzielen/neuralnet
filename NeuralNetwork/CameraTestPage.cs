@@ -17,13 +17,16 @@ namespace NeuralNetwork
         SKCanvasView canvasview;
 
         // Bitmap of the digit (recorded with the smartphone cam)
-        SKBitmap bitmap;
+        public SKBitmap bitmap = null;
 
         // Grayscaled pixel array of digit (to be used as input for neural net, generated from bitmap)
         byte[] MNISTpixelarray = new byte[28 * 28];
 
         // Contrast applied to grayscale transformation (to sharpen the lines in the picture)
-        float contrast = 0.9f;
+        const float contrast = 0.9f;
+
+        // Flag if guidelines for photos have been shown 
+        static bool flagguidelinesphoto = false;
 
         public CameraTestPage(NeuralNet neuralnet)
         {
@@ -40,28 +43,41 @@ namespace NeuralNetwork
             // Define label
             Label description = new Label
             {
-                Text = "Here you can test and teach the neural net with your own handwriting!\n" +
-                    "Just take a picture of a single digit (0..9) written on a white background. The figure should be centered and 80% of the vertical picture size.",
+                Text = "Take a picture of a single digit (0..9) with your phone camera or draw it directly with your finger on the screen"
             };
 
             // Define button to take pictures of digits
             Button buttoncam = new Button
             {
-                Text = "Take Picture of Digit",
-                WidthRequest = Application.Current.MainPage.Width * 0.5,
+                Text = "Take a Picture",
+                WidthRequest = Application.Current.MainPage.Width * 0.8,
                 HeightRequest = Application.Current.MainPage.Height * 0.10,
                 VerticalOptions = LayoutOptions.Center
             };
             buttoncam.Clicked += TakeAndShowPicture;
 
-            // Define button to aks net to guess the digit
+            // Define button to draw a digit
+            Button buttondraw = new Button
+            {
+                Text = "Draw with Finger",
+                WidthRequest = Application.Current.MainPage.Width * 0.8,
+                HeightRequest = Application.Current.MainPage.Height * 0.10,
+                VerticalOptions = LayoutOptions.Center
+            };
+            buttondraw.Clicked += async (s, e) =>
+            {
+                // Open page to draw digit
+                // Note: DrawDigitPage writes result to "bitmap"
+                await Navigation.PushAsync(new DrawDigitPage());
+            };
+
+            // Define button to ask net to guess the digit
             Button buttonasknet = new Button
             {
                 Text = "Ask Neural Net",
-                WidthRequest = Application.Current.MainPage.Width * 0.5,
+                WidthRequest = Application.Current.MainPage.Width * 0.8,
                 HeightRequest = Application.Current.MainPage.Height * 0.10,
                 VerticalOptions = LayoutOptions.Center,
-                //Margin = new Thickness(0,0,0,Application.Current.MainPage.Height * 0.05)
             };
             buttonasknet.Clicked += AskNeuralNet;
 
@@ -75,14 +91,43 @@ namespace NeuralNetwork
 
             Content = new StackLayout
             {
-                Children = { description, buttoncam, canvasview, buttonasknet },
+                Children = { description, buttoncam, buttondraw, canvasview, buttonasknet },
                 Spacing = Application.Current.MainPage.Height * 0.05
+            };
+
+            // Convert bitmap and update canvas when page appears after drawing page
+            Appearing += (s, e) =>
+            {
+                if (bitmap == null)
+                    return;
+
+                // Check if bitmap is not squared and not 28x28 px
+                if ((bitmap.Width != bitmap.Height) || bitmap.Width!=28)
+                {
+                    // Convert bitmap to 28x28 pixel grayscale
+                    bitmap = ConvertBitmap(bitmap);
+
+                    // Update canvas
+                    canvasview.InvalidateSurface();                    
+                }
             };
         }
 
         // Take picture with camera, transform it to grayscale and show it on canvas
         async void TakeAndShowPicture(object sender, EventArgs args)
         {
+            if (flagguidelinesphoto == false)
+            {
+                await DisplayAlert("To achieve suitable results...",
+                                   "- write on white background\n" +
+                                   "- use thick stroke\n" +
+                                   "- center with camera zoom\n" +
+                                   "- avoid shadows\n" +
+                                   "- fill 80% of height",
+                                   "OK");
+                flagguidelinesphoto = true;
+            }
+
             // Initialite cam handling
             await CrossMedia.Current.Initialize();
 
@@ -93,42 +138,88 @@ namespace NeuralNetwork
                 return;
             }
 
-            // Take a pic
-            var photo = await CrossMedia.Current.TakePhotoAsync(new Plugin.Media.Abstractions.StoreCameraMediaOptions
-            {
-                // Save pic automatically to album
-                //SaveToAlbum = true,
-                // Crop pic to square format (works on iOS only)
-                AllowCropping = true,
-                // Convert pic to 28x28 pic
-                PhotoSize = Plugin.Media.Abstractions.PhotoSize.MaxWidthHeight,
-                MaxWidthHeight = 28,
-            });
+            // Define options for camera plugin
+            var options = new Plugin.Media.Abstractions.StoreCameraMediaOptions();
 
-            // Convert to grayscaled bitmap
+            // On iOS it's possible to take a squared pic rendered to 28x28 directly
+            if (Device.RuntimePlatform == Device.iOS)
+            {
+                options.AllowCropping = true;
+                options.PhotoSize = Plugin.Media.Abstractions.PhotoSize.MaxWidthHeight;
+                options.MaxWidthHeight = 28;               
+            }
+
+            // Take picture
+            var photo = await CrossMedia.Current.TakePhotoAsync(options);
+
+            // Convert to resized (28x28) grayscaled bitmap
             if (photo != null)
             {
-                // Generate bitmap
+                // Generate bitmap from media object
                 using (SKManagedStream skstream = new SKManagedStream(photo.GetStream()))
                 {
                     bitmap = SKBitmap.Decode(skstream);
                 }
 
-                // Convert bitmap to grayscale and apply contrast to emphasize lines
-                // For conversion SKColorFilter is used
-                // However, SKColorFilter is usually set in SKPaint object and applied to canvas when drawn
-                // To apply it to the bitmap, we have to convert bitmap to image because it's possible to apply filters to images
-                SKImage image = SKImage.FromBitmap(bitmap);
-                SKImageFilter imagefilter = SKImageFilter.CreateColorFilter(SKColorFilter.CreateHighContrast(true, SKHighContrastConfigInvertStyle.NoInvert, contrast));
-                SKRectI rectout = new SKRectI();
-                SKPoint pointout = new SKPoint();
-                image = image.ApplyImageFilter(imagefilter, new SKRectI(0, 0, image.Width, image.Height), new SKRectI(0, 0, image.Width, image.Height), out rectout, out pointout);
-                bitmap = SKBitmap.FromImage(image);
+                // Convert bitmap to 28x28 pixel grayscale
+                bitmap = ConvertBitmap(bitmap);
             }
 
             // Update canvas view
             canvasview.InvalidateSurface();
         }     
+
+        // Convert bitmap:
+        // 1. Trim to square
+        // 2. Resize to 28x28 pixels
+        // 3. Grayscale with high contrast
+        SKBitmap ConvertBitmap(SKBitmap bitmap, float contr = contrast)
+        {
+            // 0. bitmap initialized?
+            if (bitmap == null)
+                return null;
+
+            // 1. Square bitmap (if not done by media plugin)
+            if (bitmap.Width != bitmap.Height)
+            {
+                // Calculate size and start coordinates of square
+                int size = Math.Min(bitmap.Width, bitmap.Height);
+                int left = (bitmap.Width - size) / 2;
+                int top = (bitmap.Height - size) / 2;
+
+                // Cut centered square
+                bitmap.ExtractSubset(bitmap, new SKRectI(left, top, left + size, top + size));
+            }
+
+            // 2. Resize to 28x28 pixels (if not done by media plugin)
+            if (bitmap.Width != 28)
+            {
+                SKBitmap bitmap_copy = bitmap.Copy();
+                bitmap = new SKBitmap(28, 28, bitmap.ColorType, bitmap.AlphaType);
+                bitmap_copy.Resize(bitmap, SKBitmapResizeMethod.Box);
+            }
+
+            // 3. Convert bitmap to grayscale and apply contrast to emphasize lines
+            // Second grayscale conversion to highlight pen color again which may be suppressed by resizing
+            bitmap = ConvertBitmapToGray(bitmap, contr);
+
+            return bitmap;
+        }
+
+        // Convert bitmap to grayscale and apply contrast to emphasize lines
+        // For conversion SKColorFilter is used
+        // However, SKColorFilter is usually set in SKPaint object and applied to canvas when drawn
+        // To apply it to the bitmap, we have to convert bitmap to image because it's possible to apply filters to images
+        SKBitmap ConvertBitmapToGray(SKBitmap bitmap, float contr = contrast)
+        {
+            SKImage image = SKImage.FromBitmap(bitmap);
+            SKImageFilter imagefilter = SKImageFilter.CreateColorFilter(SKColorFilter.CreateHighContrast(true, SKHighContrastConfigInvertStyle.NoInvert, contrast));
+            SKRectI rectout = new SKRectI();
+            SKPoint pointout = new SKPoint();
+            image = image.ApplyImageFilter(imagefilter, new SKRectI(0, 0, image.Width, image.Height), new SKRectI(0, 0, image.Width, image.Height), out rectout, out pointout);
+
+            return SKBitmap.FromImage(image);            
+        }
 
         // Draw bitmap
         void OnCanvasViewPaintSurface(object sender, SKPaintSurfaceEventArgs args)

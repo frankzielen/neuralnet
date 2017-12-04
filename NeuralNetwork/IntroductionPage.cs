@@ -11,7 +11,6 @@ namespace NeuralNetwork
             // Page properties
             Title = "Introduction";
             BackgroundColor = Color.SteelBlue;
-            Padding = new Thickness(Application.Current.MainPage.Width * 0.05, Application.Current.MainPage.Height * 0.05);
 
             // Define label
             Label description = new Label
@@ -27,7 +26,8 @@ namespace NeuralNetwork
                     "You may either do a mass testing with the MNIST test data or you prove the net with your own handwritten figures. Just take a picture of a digit and the net will hopefully give the right answer. If not, teach the net the correct figure.\n\n"+
                     "It's very interesting to see, how the net learns. For example, you can start writing two digits only and teaching them alternately.\n\n" +
                     "I have done this app for fun because Tariq's book inspired me to deal with this very interesting topic. Furthermore, an app makes it very easy to use own handwritten numbers for testing and teaching. The code is cross platform and on GitHub.\n\n" +
-                    "(c) 2017 Frank Zielen"
+                    "(c) 2017 Frank Zielen",
+                Margin = new Thickness(Application.Current.MainPage.Width * 0.05, Application.Current.MainPage.Height * 0.05)
             };
 
             Content = new ScrollView

@@ -48,8 +48,8 @@ namespace NeuralNetwork
                 }
             };
 
-            // Adjust/update layout when page appers
-            this.Appearing += (s, e) =>
+            // Adjust layout when page width and height are set
+            this.SizeChanged += (s, e) =>
             {
                 // Set view dimensions and locations according to page dimensions
                 this.Padding = new Thickness(Application.Current.MainPage.Width * 0.05, Application.Current.MainPage.Height * 0.05);
@@ -71,8 +71,11 @@ namespace NeuralNetwork
                 buttontrainnet.HeightRequest = height;
                 buttontestnet.HeightRequest = height;
                 buttonhandnet.HeightRequest = height;
+            };
 
-                // Renew text
+            // Renew status text when page reappers (after training / testing text may change) 
+            this.Appearing +=(s,e)=>
+            {
                 description.Text = StatusTextNeuralNet();
             };
 
