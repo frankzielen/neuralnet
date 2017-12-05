@@ -8,7 +8,7 @@ This app allows you to train and test a 3-layer neural net with handwritten digi
 
 For this, you may use the embedded MNIST data base including 40.000 handwritten digits. Furthermore, you can teach the net with your own handwriting by using your smartphone camera or writing on the screen with your finger.
 
-The app is based on https://github.com/makeyourownneuralnetwork.
+The app is based on [makeyourownneuralnetwork](https://github.com/makeyourownneuralnetwork/makeyourownneuralnetwork).
 
 ## Download
 
