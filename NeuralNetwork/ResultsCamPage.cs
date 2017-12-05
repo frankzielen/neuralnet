@@ -126,6 +126,8 @@ namespace NeuralNetwork
             {
                 if (Convert.ToInt32(labelresult.Text) > 0)
                     labelresult.Text = (Convert.ToInt32(labelresult.Text) - 1).ToString();
+                else
+                    labelresult.Text = "9";
             };
 
             Button buttonup = new Button() { Text = "+" };
@@ -134,6 +136,8 @@ namespace NeuralNetwork
             {
                 if (Convert.ToInt32(labelresult.Text) < 9)
                     labelresult.Text = (Convert.ToInt32(labelresult.Text) + 1).ToString();
+                else
+                    labelresult.Text = "0";
             };
 
             // Define button to train net
