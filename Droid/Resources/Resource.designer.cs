@@ -4901,7 +4901,7 @@ namespace NeuralNetwork.Droid
 			public const int ic_vol_type_tv_light = 2130837740;
 			
 			// aapt resource value: 0x7f0200ed
-			public const int icon = 2130837741;
+			public const int icon_rd = 2130837741;
 			
 			// aapt resource value: 0x7f0200ee
 			public const int mr_button_connected_dark = 2130837742;
