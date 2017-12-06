@@ -13,4 +13,4 @@ The app is based on [makeyourownneuralnetwork](https://github.com/makeyourownneu
 ## Download
 
 - [iOS App Store](https://itunes.apple.com/de/app/neural-net-for-handwriting/id1317853171?mt=8)
-- [Google Play Store](https://play.google.com)
+- [Google Play Store](https://play.google.com/store/apps/details?id=de.zmb.neuralnet)
