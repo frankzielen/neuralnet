@@ -85,10 +85,13 @@ namespace NeuralNetwork
                 Spacing = Application.Current.MainPage.Width * 0.1
             };
 
-            Content = new StackLayout
+            Content = new ScrollView
             {
-                Children = { canvasview, buttons },
-                Spacing = Application.Current.MainPage.Height * 0.05
+                Content = new StackLayout
+                {
+                    Children = { canvasview, buttons },
+                    Spacing = Application.Current.MainPage.Height * 0.05
+                }
             };
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using MathNet.Numerics.LinearAlgebra;
 
@@ -9,8 +10,11 @@ namespace NeuralNetwork
     // mnistdata must hold the appropriate data set
     public class TrainAndTestPage : ContentPage
     {
-        // Indicates if training / testing is currently running
-        bool activerun = false; 
+        // Flag if training / testing is currently running
+        static bool activerun = false;
+
+        // Flag if user wants to end calculation
+        static bool endrun = false;
 
         public TrainAndTestPage(NeuralNetRunType runtype, NeuralNet neuralnet, MNISTDataManager mnistdata)
         {
@@ -61,17 +65,20 @@ namespace NeuralNetwork
             };
 
             // Define page
-            Content = new StackLayout
+            Content = new ScrollView
             {
-
-                Children =
+                Content = new StackLayout
                 {
-                    description,
-                    label_useddatasets,
-                    slider_useddatasets,
-                    button,
-                    progressbar,
-                    label_progress
+
+                    Children =
+                    {
+                        description,
+                        label_useddatasets,
+                        slider_useddatasets,
+                        button,
+                        progressbar,
+                        label_progress
+                    }
                 }
             };
 
@@ -82,7 +89,9 @@ namespace NeuralNetwork
                 // Check if another calculation is currently running
                 if (activerun == true)
                 {
-                    await DisplayAlert("Warning", "Please wait until end of current calculation.", "OK");
+                    var answer = await DisplayAlert("Warning", "Do you want to stop current calculation?", "Yes", "No");
+                    if (answer)
+                        endrun = true;
                     return;
                 }
 
@@ -94,36 +103,58 @@ namespace NeuralNetwork
                         return;
                 }
 
-                // Set activerun flag
+                // Set activerun and endrun flags
                 activerun = true;
+                endrun = false;
 
-                // Define parameters for progress bar calculation
-                int progresssteps = 20;
+                // Disable Back button
+                NavigationPage.SetHasBackButton(this, false);
+
+                // Rename Button to Stop
+                button.Text = string.Format("Stop {0}ing", runtype.ToString().ToUpperFirstOnly());
+
+                // Define parameters for progress bar calculation (increase bar 100 times or each 20 runs)
+                int progresssteps = Math.Max(100, mnistdata.UsedDataSets/20);
                 int progressspan = (int)Math.Ceiling((double)mnistdata.UsedDataSets / progresssteps);
+
+                // Counter for training / testing runs
+                int i = 0;
+
+                // Initialize progress bar
+                label_progress.Text = i.ToString() + " / " + mnistdata.UsedDataSets.ToString();
+                await progressbar.ProgressTo((double)i / mnistdata.UsedDataSets, 1, Easing.Linear);
 
                 // Train neural net
                 if (runtype == NeuralNetRunType.train)
                 {
-                    // Training loop
-                    for (int i = 0; i < mnistdata.UsedDataSets; i++)
+                    while (i < mnistdata.UsedDataSets && endrun == false)
                     {
-                        neuralnet.Train(mnistdata.Input(i), mnistdata.Output(i));
+                        // Counter for runs in progress step
+                        int j = 0;
+
+                        // Training loop for one progress step done as task
+                        await Task.Run(() =>
+                        {
+                            while (j < progressspan && i < mnistdata.UsedDataSets)
+                            {
+                                // Train net with data set i
+                                neuralnet.Train(mnistdata.Input(i), mnistdata.Output(i));
+
+                                j++;
+                                i++;
+                            }
+
+                            // Remember number of training data sets
+                            neuralnet.TrainingDataCounter += j;
+                        });
 
                         // Update progress bar
-                        if (i % progressspan == 0)
-                        {
-                            label_progress.Text = i.ToString() + " / " + mnistdata.UsedDataSets.ToString();
-                            await progressbar.ProgressTo((double)i / mnistdata.UsedDataSets, 1, Easing.Linear);
-                        }
+                        label_progress.Text = i.ToString() + " / " + mnistdata.UsedDataSets.ToString();
+                        await progressbar.ProgressTo((double)i / mnistdata.UsedDataSets, 1, Easing.Linear);
                     }
-                    label_progress.Text = mnistdata.UsedDataSets.ToString() + " / " + mnistdata.UsedDataSets.ToString();
-                    await progressbar.ProgressTo(1.0, 1, Easing.Linear);
 
                     // Show mesage
-                    await DisplayAlert("Result", string.Format("Neural net trained with {0:N0} data sets",mnistdata.UsedDataSets), "OK");
-
-                    // Remember number of training data sets
-                    neuralnet.TrainingDataCounter += mnistdata.UsedDataSets;
+                    await DisplayAlert("Result", string.Format("Neural net trained with {0:N0} data sets", i), "OK");
                 }
 
                 if (runtype == NeuralNetRunType.test)
@@ -134,28 +165,39 @@ namespace NeuralNetwork
                     Vector<double> digitcorrect = Vector<double>.Build.Dense(10);
 
                     // Testing loop
-                    for (int i = 0; i < mnistdata.UsedDataSets; i++)
+                    while (i < mnistdata.UsedDataSets && endrun == false)
                     {
-                        // Increase counter for testet digit (0..9)
-                        int number = mnistdata.Number(i);
-                        digittotal[number]++;
+                        // Counter for runs in progress step
+                        int j = 0;
 
-                        // Ask net
-                        Vector<double> answer = neuralnet.Query(mnistdata.Input(i));
+                        // Testing loop for one progress step done as task
+                        await Task.Run(() =>
+                        {
+                            while (j < progressspan && i < mnistdata.UsedDataSets)
+                            {
+                                // Increase counter for testet digit (0..9)
+                                int number = mnistdata.Number(i);
+                                digittotal[number]++;
 
-                        // Check if it's correct
-                        if (answer.AbsoluteMaximumIndex() == number)
-                            digitcorrect[number]++;
+                                // Ask net
+                                Vector<double> answer = neuralnet.Query(mnistdata.Input(i));
+
+                                // Check if it's correct
+                                if (answer.AbsoluteMaximumIndex() == number)
+                                    digitcorrect[number]++;
+
+                                j++;
+                                i++;
+                            }
+
+                            // Remember number of training data sets
+                            neuralnet.TrainingDataCounter += j;
+                        });
 
                         // Update progress bar
-                        if (i % progressspan == 0)
-                        {
-                            label_progress.Text = i.ToString() + " / " + mnistdata.UsedDataSets.ToString();
-                            await progressbar.ProgressTo((double)i / mnistdata.UsedDataSets, 1, Easing.Linear);
-                        }
+                        label_progress.Text = i.ToString() + " / " + mnistdata.UsedDataSets.ToString();
+                        await progressbar.ProgressTo((double)i / mnistdata.UsedDataSets, 1, Easing.Linear);
                     }
-                    label_progress.Text = mnistdata.UsedDataSets.ToString() + " / " + mnistdata.UsedDataSets.ToString();
-                    await progressbar.ProgressTo(1.0, 1, Easing.Linear);
 
                     // Remeber performance result
                     neuralnet.Performance.Add(digitcorrect.Sum() / digittotal.Sum());
@@ -168,9 +210,27 @@ namespace NeuralNetwork
                 label_progress.Text = "Currently no calculation running";
                 await progressbar.ProgressTo(0.0, 250, Easing.Linear);
 
+                // Rename Button to Start
+                button.Text = string.Format("Start {0}ing", runtype.ToString().ToUpperFirstOnly());
+
+                // Enable Back button
+                NavigationPage.SetHasBackButton(this, true);
+
                 // Cancel activerun flag
                 activerun = false;
             };
+        }
+
+        // Prevent to go back via hardware back button if there is currently a task running
+        protected override bool OnBackButtonPressed()
+        {
+            if (activerun)
+            {
+                DisplayAlert("Warning","Please wait until end of current calculation or stop calculation.","OK");
+                return true;
+            }
+            else
+                return base.OnBackButtonPressed();
         }
     }
 }

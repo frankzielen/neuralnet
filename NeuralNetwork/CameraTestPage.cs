@@ -89,10 +89,13 @@ namespace NeuralNetwork
             };
             canvasview.PaintSurface += OnCanvasViewPaintSurface;
 
-            Content = new StackLayout
+            Content = new ScrollView
             {
-                Children = { description, buttoncam, buttondraw, canvasview, buttonasknet },
-                Spacing = Application.Current.MainPage.Height * 0.05
+                Content = new StackLayout
+                {
+                    Children = { description, buttoncam, buttondraw, canvasview, buttonasknet },
+                    Spacing = Application.Current.MainPage.Height * 0.05
+                }
             };
 
             // Convert bitmap and update canvas when page appears after drawing page

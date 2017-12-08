@@ -31,20 +31,23 @@ namespace NeuralNetwork
 
             Button buttonhelp = new Button { Text = "Introduction" };
             Button buttonresetnet = new Button { Text = "Reset Net" };
-            Button buttontrainnet = new Button { Text = "Train Net with MNIST Data" };
-            Button buttontestnet = new Button { Text = "Test Net with MNIST Data" };
-            Button buttonhandnet = new Button { Text = "Try Net with Handwriting" };
+            Button buttontrainnet = new Button { Text = "Train MNIST Data" };
+            Button buttontestnet = new Button { Text = "Test MNIST Data" };
+            Button buttonhandnet = new Button { Text = "Teach Handwriting" };
 
-            Content = new StackLayout
+            Content = new ScrollView
             {
-                Children =
+                Content = new StackLayout
                 {
-                    description,
-                    buttonhelp,
-                    buttontrainnet,
-                    buttontestnet,
-                    buttonhandnet,
-                    buttonresetnet
+                    Children =
+                    {
+                        description,
+                        buttonhelp,
+                        buttontrainnet,
+                        buttontestnet,
+                        buttonhandnet,
+                        buttonresetnet
+                    }
                 }
             };
 

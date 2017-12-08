@@ -82,10 +82,13 @@ namespace NeuralNetwork
             SetLabels(0);
 
             // Step 4: Build page
-            Content = new StackLayout
+            Content = new ScrollView
             {
-                Children = { labelheadline, labeldigitcorrect, myCarousel, labeldigitanswernet },
-                Spacing = Application.Current.MainPage.Height * 0.05
+                Content = new StackLayout
+                {
+                    Children = { labelheadline, labeldigitcorrect, myCarousel, labeldigitanswernet },
+                    Spacing = Application.Current.MainPage.Height * 0.05
+                }
             };
 
             // Update page when image is swiped

@@ -113,12 +113,14 @@ namespace NeuralNetwork
             };
 
             // Define page
-            Content = new StackLayout
+            Content = new ScrollView
             {
-                Children = { grid, button },
-                Spacing = Application.Current.MainPage.Height * 0.05
+                Content = new StackLayout
+                {
+                    Children = { grid, button },
+                    Spacing = Application.Current.MainPage.Height * 0.05
+                }
             };
-
         }
     }
 }
